@@ -1,20 +1,17 @@
 from aiogram import types
+from magic_filter import F
 
+from filters.private import IsPrivate
+from keyboards.default.admin_custom_buttons import admin_uz_main_buttons
 from loader import dp, db
-from states.admin_states import Admin
 
 
-@dp.message_handler(state=Admin.cars_main)
-async def cars_main_cmd_(message: types.Message):
+@dp.message_handler(IsPrivate(), F.text == "↩️ Admin menyusiga qaytish", state="*")
+async def admin_cars_main_uz(message: types.Message):
     admin = await db.select_admin_sql(
         telegram_id=message.from_user.id
     )
     if admin:
-        if message.text == '🚗 Yengil avtomobillar':
-            pass
-        elif message.text == '🚚 Yuk avtomobillari':
-            pass
-        elif message.text == '🚜 Qurilish avtomobillari':
-            pass
-        else:
-            pass
+        await message.answer(
+            text=message.text, reply_markup=admin_uz_main_buttons
+        )

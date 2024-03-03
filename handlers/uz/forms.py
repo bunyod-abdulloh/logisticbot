@@ -13,7 +13,7 @@ async def get_full_name_forms(message: types.Message):
             full_name=message.text, telegram_id=message.from_user.id
         )
         await message.answer(
-            text='Raqamingizni habar bilan <b>998XXXXXXXXX</b> shaklda yoki quyidagi tugma orqali yuboring:',
+            text='Raqamingizni quyidagi tugma orqali yuboring',
             reply_markup=get_contact
         )
         await UserForms.phone.set()
@@ -23,29 +23,20 @@ async def get_full_name_forms(message: types.Message):
         )
 
 
-@dp.message_handler(state=UserForms.phone, content_types=['contact', 'text'])
+@dp.message_handler(state=UserForms.phone, content_types=['contact'])
 async def get_phone_forms(message: types.Message, state: FSMContext):
     telegram_id = message.from_user.id
     username = message.from_user.username
-    if message.content_type == 'contact':
-        await db.update_user_phone_username(
-            phone=message.contact.phone_number, username=f'@{username}', telegram_id=telegram_id
-        )
-        await message.answer(
-            text='Siz ro\'yxatdan muvaffaqqiyatli o\'tdingiz!',
-            reply_markup=menu_uz_buttons
-        )
-        await state.finish()
-    elif message.text.isdigit():
-        await db.update_user_phone_username(
-            phone=f'+{message.text}', username=f'@{username}', telegram_id=telegram_id
-        )
-        await message.answer(
-            text='Siz ro\'yxatdan muvaffaqqiyatli o\'tdingiz!',
-            reply_markup=menu_uz_buttons
-        )
-        await state.finish()
+    phone = message.contact.phone_number
+    if phone.isdigit():
+        phone_ = f"+{phone}"
     else:
-        await message.answer(
-            text='Iltimos, faqat raqam kiriting!'
-        )
+        phone_ = phone
+    await db.update_user_phone_username(
+        phone=phone_, username=f'@{username}', telegram_id=telegram_id
+    )
+    await message.answer(
+        text='Siz ro\'yxatdan muvaffaqqiyatli o\'tdingiz!',
+        reply_markup=menu_uz_buttons
+    )
+    await state.finish()

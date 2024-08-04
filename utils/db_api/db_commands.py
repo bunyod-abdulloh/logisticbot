@@ -109,48 +109,6 @@ class Database:
     async def drop_users(self):
         await self.execute("DROP TABLE Users", execute=True)
 
-    async def create_table_admin(self):
-        sql = """
-        CREATE TABLE IF NOT EXISTS Admin (        
-        telegram_id BIGINT NOT NULL UNIQUE,
-        full_name VARCHAR(60) NULL,        
-        description_uz VARCHAR(5000) NULL,
-        description_ru VARCHAR(5000) NULL,
-        send_message BOOLEAN DEFAULT FALSE        
-        );
-        """
-        await self.execute(sql, execute=True)
-
-    async def add_admin(self, telegram_id, full_name):
-        sql = "INSERT INTO Admin (telegram_id, full_name) VALUES($1, $2) returning *"
-        return await self.execute(sql, telegram_id, full_name, fetchrow=True)
-
-    async def update_description_uz(self, description_uz, telegram_id):
-        sql = "UPDATE Admin SET description_uz=$1 WHERE telegram_id=$2"
-        return await self.execute(sql, description_uz, telegram_id, execute=True)
-
-    async def update_send_message(self, send_message):
-        sql = f"UPDATE Admin SET send_message='{send_message}'"
-        return await self.execute(sql, execute=True)
-
-    async def select_admins_sql(self):
-        sql = f"SELECT telegram_id, full_name, send_message FROM Admin"
-        return await self.execute(sql, fetch=True)
-
-    async def select_admin_sql(self, telegram_id):
-        sql = f"SELECT telegram_id, full_name FROM Admin WHERE telegram_id='{telegram_id}'"
-        return await self.execute(sql, fetch=True)
-
-    async def select_desription_uz(self, telegram_id):
-        sql = f"SELECT description_uz FROM Admin WHERE telegram_id='{telegram_id}'"
-        return await self.execute(sql, fetchrow=True)
-
-    async def delete_admin_sql(self, telegram_id):
-        await self.execute(f"DELETE FROM Admin WHERE telegram_id='{telegram_id}'", execute=True)
-
-    async def drop_table_admin(self):
-        await self.execute("DROP TABLE Admin", execute=True)
-
     # ====================TABLE CARS============================================
     async def create_table_cars(self):
         sql = """

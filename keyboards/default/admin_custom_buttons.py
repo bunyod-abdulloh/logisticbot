@@ -1,7 +1,6 @@
 from aiogram.types import ReplyKeyboardMarkup, KeyboardButton
 
 admin_uz_main_buttons = ReplyKeyboardMarkup(resize_keyboard=True)
-admin_uz_main_buttons.row('➕ Admin qo\'shish', '😎 Adminlarni ko\'rish')
 admin_uz_main_buttons.row('🚙 Avtomobillar bo\'limi')
 admin_uz_main_buttons.row('📊 Hisobot', 'Foydalanuvchilar')
 admin_uz_main_buttons.row('ID olish', 'ID o\'chirish')

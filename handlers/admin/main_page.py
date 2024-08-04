@@ -3,63 +3,31 @@ from aiogram.dispatcher import FSMContext
 from aiogram.dispatcher.filters import Command
 from magic_filter import F
 
+from data.config import ADMINS
 from filters.private import IsPrivate
 from keyboards.default.admin_custom_buttons import admin_uz_main_buttons, cars_cbuttons, stats_main
-from keyboards.inline.admin_inline_buttons import admin_delete_button
 from loader import dp, db
 from states.admin_states import Admin
 
 
-@dp.message_handler(Command(['admins']), state='*')
+@dp.message_handler(Command(['admin']), state='*', user_id=ADMINS)
 async def admin_page_main(message: types.Message, state: FSMContext):
     await state.finish()
-    admin = await db.select_admin_sql(
-        telegram_id=message.from_user.id
-    )
-    if admin:
-        await message.answer(
-            text=message.text,
-            reply_markup=admin_uz_main_buttons
-        )
-
-
-@dp.message_handler(IsPrivate(), F.text == '😎 Adminlarni ko\'rish', state='*')
-async def view_admins_cmd(message: types.Message, state: FSMContext):
-    await state.finish()
-    admins = await db.select_admins_sql()
-    if admins:
-        for admin in admins:
-            await message.answer(
-                text=f'Admin: {admin[1]}\nID raqam: {admin[0]}',
-                reply_markup=await admin_delete_button(
-                    telegram_id=admin[0]
-                )
-            )
-    else:
-        await message.answer(
-            text='Hozircha Sizdan boshqa admin yo\'q!'
-        )
-
-
-@dp.message_handler(IsPrivate(), F.text == '➕ Admin qo\'shish', state='*')
-async def add_admin_cmd(message: types.Message, state: FSMContext):
-    await state.finish()
     await message.answer(
-        text='Admin ismini kiriting:'
+        text=message.text,
+        reply_markup=admin_uz_main_buttons
     )
-    await Admin.add_admin_name.set()
 
 
-@dp.message_handler(IsPrivate(), F.text == '🚙 Avtomobillar bo\'limi', state='*')
+@dp.message_handler(IsPrivate(), F.text == '🚙 Avtomobillar bo\'limi', state='*', user_id=ADMINS)
 async def cars_main_admin(message: types.Message, state: FSMContext):
     await state.finish()
     await message.answer(
         text=message.text, reply_markup=cars_cbuttons
     )
-    await Admin.cars_main.set()
 
 
-@dp.message_handler(IsPrivate(), F.text == '📊 Hisobot', state='*')
+@dp.message_handler(IsPrivate(), F.text == '📊 Hisobot', state='*', user_id=ADMINS)
 async def stats_cmd(message: types.Message, state: FSMContext):
     await state.finish()
     await message.answer(
@@ -67,7 +35,7 @@ async def stats_cmd(message: types.Message, state: FSMContext):
     )
 
 
-@dp.message_handler(IsPrivate(), F.text == '👥 Foydalanuvchilar soni', state='*')
+@dp.message_handler(IsPrivate(), F.text == '👥 Foydalanuvchilar soni', state='*', user_id=ADMINS)
 async def count_users_cmd(message: types.Message, state: FSMContext):
     await state.finish()
     users = await db.count_users()
@@ -76,7 +44,7 @@ async def count_users_cmd(message: types.Message, state: FSMContext):
     )
 
 
-@dp.message_handler(IsPrivate(), F.text == '🗣 Foydalanuvchilarga habar yuborish', state='*')
+@dp.message_handler(IsPrivate(), F.text == '🗣 Foydalanuvchilarga habar yuborish', state='*', user_id=ADMINS)
 async def send_to_users(message: types.Message, state: FSMContext):
     await state.finish()
     await message.answer(
@@ -85,7 +53,7 @@ async def send_to_users(message: types.Message, state: FSMContext):
     await Admin.send_to_users.set()
 
 
-@dp.message_handler(IsPrivate(), F.text == 'ID olish', state='*')
+@dp.message_handler(IsPrivate(), F.text == 'ID olish', state='*', user_id=ADMINS)
 async def get_id_cmd(message: types.Message):
     admin = await db.select_admin_sql(telegram_id=message.from_user.id)
     if admin:

@@ -8,21 +8,16 @@ from utils.set_bot_commands import set_default_commands
 
 async def on_startup(dispatcher):
     await db.create()
-    await db.drop_users()
+    # await db.drop_users()
     # await db.drop_table_logistics()
     # await db.drop_table_feedback()
     # await db.drop_table_admin()
-    # await db.drop_table_cars()
     await db.create_table_users()
     await db.create_table_logistics()
     await db.create_table_buy()
     await db.create_table_feedback()
-    await db.create_table_admin()
     await db.create_table_cars()
     await db.create_table_reports()
-
-    # await db.add_admin(telegram_id=1041847396, full_name='Bunyod')
-
     await set_default_commands(dispatcher)
     await on_startup_notify(dispatcher)
 

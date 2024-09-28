@@ -14,19 +14,15 @@ async def bot_start(message: types.Message, state: FSMContext):
     await state.finish()
     user = await db.select_user(telegram_id=message.from_user.id)
     if user:
-        if user[5] == 'uz' and user[-1] is None:
+        if user[5] == 'uz':
             await message.answer(
                 text='🏡 Bosh sahifa',
                 reply_markup=menu_uz_buttons
             )
-        elif user[5] == 'ru' and user[-1] is None:
+        elif user[5] == 'ru':
             await message.answer(
                 text='Главное меню',
                 reply_markup=menu_ru_buttons
-            )
-        else:
-            await message.answer(
-                text='Sizga botdan foydalanish uchun cheklov o\'rnatilgan!'
             )
     else:
         await message.answer(

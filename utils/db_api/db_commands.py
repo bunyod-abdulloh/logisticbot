@@ -109,6 +109,10 @@ class Database:
     async def drop_users(self):
         await self.execute("DROP TABLE Users", execute=True)
 
+    async def dowloadusers_json(self):
+        sql = "SELECT row_to_json(t) FROM (SELECT * FROM Users) t"
+        return await self.execute(sql, fetch=True)
+
     # ====================TABLE CARS============================================
     async def create_table_cars(self):
         sql = """
@@ -130,6 +134,10 @@ class Database:
 
     async def select_cars(self):
         sql = f"SELECT DISTINCT brand FROM Cars ORDER BY brand"
+        return await self.execute(sql, fetch=True)
+
+    async def select_all_cars(self):
+        sql = f"SELECT * FROM Cars"
         return await self.execute(sql, fetch=True)
 
     async def select_cars_model(self, brand):

@@ -3,3 +3,4 @@ environs~=8.0.0
 numpy~=1.26.3
 pandas~=2.1.4
 openpyxl~=3.1.2
+APScheduler~=3.10.4

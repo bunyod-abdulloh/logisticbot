@@ -1,13 +1,14 @@
+import datetime
 import os
 
 from aiogram import types
 from aiogram.dispatcher import FSMContext
 from aiogram.dispatcher.filters import Command
 from magic_filter import F
-from openpyxl.styles import Border, Side, Alignment
-from openpyxl.workbook import Workbook
 
+from data.config import DATABASE_GROUP, ADMINS
 from filters.private import IsPrivate
+from handlers.admin.export_to_xls import export_to_excel
 from keyboards.default.admin_custom_buttons import admin_users_button
 from loader import dp, db, bot
 from states.admin_states import Admin
@@ -20,39 +21,20 @@ async def view_all_users_menu(message: types.Message):
     )
 
 
-@dp.message_handler(IsPrivate(), F.text == 'Download all users', state='*')
-async def download_all_users_menu(message: types.Message):
+@dp.message_handler(F.text == "users", user_id=ADMINS)
+async def download_user_xls(message: types.Message = None):
     users = await db.select_all_users()
-    wb = Workbook()
-    ws = wb.active
-    ws.append(['ID', 'TELEGRAM ID', 'FULL_NAME', 'USER_NAME', 'PHONE_NUMBER'])
-    c = 0
-    print(users)
-    for user in users:
-        if user:
-            c += 1
-            ws.append([user[0], user[1], user[2], user[3], user[4]])
-        else:
-            continue
-    max_row = ws.max_row
-    start_cell = ws['A1']
-    end_cell = ws[f'E{max_row}']
-    border_style = Border(left=Side(border_style='thin'),
-                          right=Side(border_style='thin'),
-                          top=Side(border_style='thin'),
-                          bottom=Side(border_style='thin'))
-    alignment_style = Alignment(horizontal='center', vertical='center', wrap_text=True)
-    for row in ws.iter_rows(min_row=start_cell.row, max_row=end_cell.row,
-                            min_col=start_cell.column, max_col=end_cell.column):
-        for cell in row:
-            cell.border = border_style
-            cell.alignment = alignment_style
-    wb.save("All_users.xlsx")
-    await message.answer_document(
-        document=types.InputFile(path_or_bytesio="All_users.xlsx"),
-        caption=f'Jami {c} ta foydalanuvchi ma\'lumotlari yuklandi!'
+    current_date = datetime.date.today()
+    filepath = f"downloads/userslogistic_{current_date}.xlsx"
+    await export_to_excel(
+        data=users, headings=["ID", "TELEGRAM_ID", "FULL_NAME", "USERNAME", "PHONE", "LANGUAGE"], filepath=filepath
     )
-    os.remove("All_users.xlsx")
+    await bot.send_document(
+        chat_id=DATABASE_GROUP,
+        document=types.input_file.InputFile(path_or_bytesio=filepath),
+        caption=f"#logisticAT #users\n\n{current_date}\n\nFOYDALANUVCHILAR JADVALI"
+    )
+    os.remove(filepath)
 
 
 @dp.message_handler(IsPrivate(), F.text == 'Block user', state='*')

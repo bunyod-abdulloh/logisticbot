@@ -9,7 +9,7 @@ from utils.set_bot_commands import set_default_commands
 async def on_startup(dispatcher):
     await db.create()
     # await db.drop_users()
-    # await db.drop_table_logistics()
+    # #await db.drop_table_logistics()
     # await db.drop_table_feedback()
     # await db.drop_table_admin()
     await db.create_table_users()

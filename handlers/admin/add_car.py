@@ -21,7 +21,7 @@ async def download_and_save_file(file_id: str, save_path: str):
     return file_path
 
 
-@dp.message_handler(F.photo)
+@dp.message_handler(F.photo, state="*")
 async def get_photo_id_rtr(message: types.Message):
     await message.answer(
         text=f"<code>{message.photo[-1].file_id}</code>"

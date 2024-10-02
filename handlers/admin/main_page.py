@@ -55,13 +55,11 @@ async def send_to_users(message: types.Message, state: FSMContext):
 
 @dp.message_handler(IsPrivate(), F.text == 'ID olish', state='*', user_id=ADMINS)
 async def get_id_cmd(message: types.Message):
-    admin = await db.select_admin_sql(telegram_id=message.from_user.id)
-    if admin:
-        await message.answer(
-            text=f'ID olish bo\'limi yoqildi!\n\nRasmlarni yuborib ID raqamlarini olishingiz mumkin!'
-                 f'\n\nMarhamat, rasm yuboring'
-        )
-        await Admin.get_id.set()
+    await message.answer(
+        text=f'ID olish bo\'limi yoqildi!\n\nRasmlarni yuborib ID raqamlarini olishingiz mumkin!'
+             f'\n\nMarhamat, rasm yuboring'
+    )
+    await Admin.get_id.set()
 
 
 @dp.message_handler(state=Admin.get_id, content_types=['photo'])

@@ -21,14 +21,6 @@ async def download_and_save_file(file_id: str, save_path: str):
     return file_path
 
 
-@dp.message_handler(F.photo)
-async def get_photo_id_rtr(message: types.Message):
-    photo = message.photo[-1].file_id
-    await message.answer(
-        text=photo
-    )
-
-
 @dp.message_handler(IsPrivate(), F.text == "Excel shaklda qo\'shish", state="*")
 async def add_cars_main_uz(message: types.Message):
     await message.answer(
